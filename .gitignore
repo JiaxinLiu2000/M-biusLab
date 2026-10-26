@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+application-local.yml
+
+# Build
+target/
+*.class
+*.log
+logs/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Runtime data (local only)
+/data/
+/runtime/
+/workspaces/
+/vault/
+!src/main/resources/**
+target-*/
