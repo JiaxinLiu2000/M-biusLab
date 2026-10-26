@@ -1,0 +1,85 @@
+# Hard-coded safety rules (no model calls). Patterns are Java regexes, matched case-insensitively.
+# `kinds` limits a rule to action kinds; empty = all kinds. The live policy may override any list
+# with a fenced ```yaml safety-rules block.
+commandRules:
+  - id: shell.rm-rf
+    pattern: '\brm\s+(-[a-z]*r[a-z]*f[a-z]*|-[a-z]*f[a-z]*r[a-z]*|-r\s+-f|-f\s+-r|--recursive\s+--force|--force\s+--recursive)\b'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Recursive forced delete
+  - id: shell.del-recursive
+    pattern: '\b(del|erase|rd|rmdir)\b[^\n]*\s/s\b'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Recursive Windows delete
+  - id: shell.remove-item-recurse
+    pattern: '\bRemove-Item\b[^\n]*-Recurse'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Recursive PowerShell delete
+  - id: shell.format
+    pattern: '\bformat(\.com)?\s+[a-z]:'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Disk format
+  - id: shell.mkfs
+    pattern: '\bmkfs(\.\w+)?\b'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Filesystem creation
+  - id: shell.dd
+    pattern: '\bdd\s+[^\n]*\bif='
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Raw disk copy
+  - id: shell.shutdown
+    pattern: '(^|[\s;&|])(sudo\s+)?(shutdown|reboot|halt|poweroff|init\s+0|Stop-Computer|Restart-Computer)\b'
+    kinds: [SHELL_EXEC]
+    reason: Host shutdown or reboot
+  - id: shell.fork-bomb
+    pattern: ':\s*\(\s*\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:'
+    kinds: []
+    reason: Fork bomb
+  - id: shell.chmod-777-root
+    pattern: '\bchmod\s+(-R\s+)?0?777\s+/(\s|$|\*)'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: World-writable root
+  - id: shell.pipe-to-shell
+    pattern: '\b(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(sh|bash|zsh|ksh|python[0-9.]*)\b'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Download piped into a shell
+  - id: shell.iex-download
+    pattern: '(Invoke-Expression|\biex\b)[^\n]*(DownloadString|Invoke-WebRequest|\biwr\b|Invoke-RestMethod|\birm\b|Net\.WebClient)|(DownloadString|Invoke-WebRequest|\biwr\b|Invoke-RestMethod|\birm\b)[^\n]*\|\s*(iex|Invoke-Expression)\b'
+    kinds: [SHELL_EXEC, CODE_EXEC, LAB_TOOL_REGISTER]
+    reason: Downloaded script executed via Invoke-Expression
+secretRules:
+  - id: secret.openai-style-key
+    pattern: '\bsk-[A-Za-z0-9_\-]{16,}'
+    kinds: []
+    reason: API key (sk-...)
+  - id: secret.github-token
+    pattern: '\bgh[opusr]_[A-Za-z0-9]{20,}'
+    kinds: []
+    reason: GitHub token
+  - id: secret.named-key
+    pattern: '\b(CRUSOE_API_KEY|TYPESAFE_API_KEY|YDC_API_KEY)\b'
+    kinds: []
+    reason: Platform API key reference
+  - id: secret.private-key
+    pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+    kinds: []
+    reason: Private key material
+protectedPaths:
+  - 'frontend/core/**'
+  - 'src/main/java/ai/mobiuslab/safety/**'
+  - '**/referee/**'
+  - '**/.env*'
+  - '**/db/migration/**'
+  - '**/safety/SAFETY_POLICY.md'
+  - '**/safety/default-rules.yml'
+  - '**/safety/default-policy.md'
+allowedHosts:
+  - localhost
+  - 127.0.0.1
+  - api.crusoe.ai
+  - api.typesafe.ai
+  - api.ydc-index.io
+  - arxiv.org
+  - export.arxiv.org
+  - api.github.com
+  - pypi.org
+  - files.pythonhosted.org
