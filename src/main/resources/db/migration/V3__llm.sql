@@ -1,0 +1,27 @@
+-- v0.0.0 LLM gateway: append-only per-call usage log (no audit columns: rows are never updated).
+CREATE TABLE llm_call (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    call_id           VARCHAR(40)    NOT NULL,
+    ts                DATETIME(3)    NOT NULL,
+    provider          VARCHAR(16)    NOT NULL,
+    model             VARCHAR(120)   NOT NULL,
+    caller_module     VARCHAR(120)   NOT NULL,
+    agent_id          VARCHAR(80)    NULL,
+    prompt_key        VARCHAR(160)   NULL,
+    prompt_version    INT            NULL,
+    prompt_tokens     BIGINT         NOT NULL DEFAULT 0,
+    cached_tokens     BIGINT         NOT NULL DEFAULT 0,
+    completion_tokens BIGINT         NOT NULL DEFAULT 0,
+    cache_hit_ratio   DOUBLE         NOT NULL DEFAULT 0,
+    latency_ms        BIGINT         NOT NULL DEFAULT 0,
+    cost_usd          DECIMAL(14, 8) NOT NULL DEFAULT 0,
+    status            VARCHAR(16)    NOT NULL,
+    error             VARCHAR(1000)  NULL,
+    request_id        VARCHAR(120)   NULL,
+    UNIQUE KEY uk_llm_call_id (call_id),
+    INDEX idx_llm_call_ts (ts),
+    INDEX idx_llm_call_model (model, ts),
+    INDEX idx_llm_call_module (caller_module, ts),
+    INDEX idx_llm_call_agent (agent_id, ts),
+    INDEX idx_llm_call_prompt (prompt_key, prompt_version)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;

@@ -1,0 +1,38 @@
+# Model catalog: provider, prices in USD per 1M tokens, context length and role defaults.
+# Role "worker" is the default for calls that do not name a model.
+models:
+  - id: nvidia/Nemotron-3-Super-120B-A12B
+    provider: CRUSOE
+    inputPerM: 0.30
+    cachedInputPerM: 0.15
+    outputPerM: 2.40
+    contextLength: 131072
+    roles: [master]
+  - id: nvidia/nemotron-3.5-lightning-30b-a3b
+    provider: CRUSOE
+    inputPerM: 0.05
+    cachedInputPerM: 0.03
+    outputPerM: 0.20
+    contextLength: 131072
+    roles: [worker]
+  - id: deepseek-ai/Deepseek-V4-Flash
+    provider: CRUSOE
+    inputPerM: 0.14
+    cachedInputPerM: 0.03
+    outputPerM: 0.28
+    contextLength: 131072
+    roles: [referee]
+  - id: openai/gpt-oss-120b
+    provider: CRUSOE
+    inputPerM: 0.05
+    cachedInputPerM: 0.05
+    outputPerM: 0.20
+    contextLength: 131072
+    roles: [structured]
+  - id: jev-latest
+    provider: JEV
+    inputPerM: 0.042
+    cachedInputPerM: 0.042
+    outputPerM: 0
+    contextLength: 0
+    roles: [decision]
