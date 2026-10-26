@@ -13,7 +13,7 @@
 
     <groupId>ai.mobiuslab</groupId>
     <artifactId>mobius-lab</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <name>mobius-lab</name>
     <description>Self-evolving research agent platform (backend)</description>
 
